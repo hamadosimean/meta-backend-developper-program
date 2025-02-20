@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    #adding thirds party library
+    # adding thirds party library
     "LittleLemonAPI",
     "rest_framework",
     "djoser",
@@ -127,6 +127,6 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-#Custom User
+# Custom User
 
 AUTH_USER_MODEL = "LittleLemonAPI.CustomUser"
