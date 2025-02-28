@@ -9,10 +9,10 @@ from django.utils.text import slugify
 # Adding custom user model
 class CustomUser(AbstractUser):
     contact = models.CharField(max_length=225, blank=True, null=True)
-    bio = models.TextField(null=True, blank=True)
-    location = models.CharField(max_length=30, blank=True)
-    photo = models.ImageField(upload_to="images", blank=True, null=True)
-    birth_date = models.DateField(null=True, blank=True)
+    # bio = models.TextField(null=True, blank=True)
+    # location = models.CharField(max_length=30, blank=True)
+    # photo = models.ImageField(upload_to="images", blank=True, null=True)
+    # birth_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.username
@@ -20,7 +20,7 @@ class CustomUser(AbstractUser):
 
 # Category model
 class Category(models.Model):
-    slug = models.SlugField()
+    slug = models.SlugField(db_index=True)
     title = models.CharField(max_length=225)
 
     def save(self, *args, **kwargs):
@@ -36,7 +36,7 @@ class Category(models.Model):
 class MenuItem(models.Model):
     title = models.CharField(max_length=225, db_index=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, db_index=True)
-    image = models.ImageField(upload_to="menu_items/", blank=True)
+    # image = models.ImageField(upload_to="menu_items/", blank=True)
     featured = models.BooleanField(db_index=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
 

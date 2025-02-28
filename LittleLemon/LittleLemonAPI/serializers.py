@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from rest_framework.validators import UniqueValidator
 import bleach
 from .models import CustomUser, Category, MenuItem, Order, OrderItem, Cart
 
@@ -15,10 +16,10 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "username",
             "contact",
-            "bio",
-            "location",
-            "photo",
-            "date_birth",
+            # "bio",
+            # "location",
+            # "photo",
+            # "date_birth",
         ]
 
     # Here we are going to sanitize users inputs for security reason
@@ -27,8 +28,8 @@ class UserSerializer(serializers.ModelSerializer):
         attrs["last_name"] = bleach.clean(attrs["last_name"])
         attrs["username"] = bleach.clean(attrs["username"])
         attrs["contact"] = bleach.clean(attrs["contact"])
-        attrs["bio"] = bleach.clean(attrs["bio"])
-        attrs["location"] = bleach.clean(attrs["location"])
+        # attrs["bio"] = bleach.clean(attrs["bio"])
+        # attrs["location"] = bleach.clean(attrs["location"])
         return super().validate(attrs)
 
 
@@ -37,16 +38,37 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ["id", "slug", "title"]
+        extra_kwargs = {
+            "title": {
+                "validators": [
+                    UniqueValidator(queryset=Category.objects.all()),
+                ],
+            },
+        }
 
 
 # menu items serialization
 class MenuItemSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)
+    # category = serializers.HyperlinkedRelatedField(
+    #     queryset=Category.objects.all(), view_name="category-detail"
+    # )
+    # category = serializers.HyperlinkedRelatedField(
+    #     view_name="category-detail", read_only=True
+    # )
+    category_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = MenuItem
-        fields = ["id", "title", "price", "featured", "image", "category"]
-        extra_kwargs = {"price": {"min_value": 0}}
+        fields = ["id", "title", "price", "featured", "category", "category_id"]
+        extra_kwargs = {
+            "price": {"min_value": 0},  # price cannot be less than 0
+            "title": {
+                "validators": [
+                    UniqueValidator(queryset=MenuItem.objects.all()),
+                ],
+            },
+        }
 
     # checking the price, if the price is less than 0 raise a validation error
 

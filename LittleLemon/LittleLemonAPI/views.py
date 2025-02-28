@@ -4,8 +4,14 @@ from rest_framework.decorators import api_view, permission_classes, throttle_cla
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
+from rest_framework.permissions import (
+    IsAdminUser,
+    IsAuthenticated,
+    SAFE_METHODS,
+)
 from django.contrib.auth.models import User, Group
+from .throttles import TenCallPerMinute
 
 # models import
 from .models import Cart, Category, CustomUser, MenuItem, Order, OrderItem
@@ -16,7 +22,12 @@ from .serializers import (
     MenuItemSerializer,
     OrderItemSerializer,
     OrderSerializer,
+    CategorySerializer,
 )
+from .permission import IsManagerOrReadOnly
+
+# defining authoriazation classes
+
 
 # Create your views here.
 
@@ -51,7 +62,14 @@ from .serializers import (
 class MenuItemsView(APIView):
     """List all menu items or create new ones"""
 
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    # customize permissions class so manager can perform CRUD on the object
+    # and other users like customizer and deliveyr crew can only view
+    def get_permissions(self):
+        if self.request.method == "GET":
+            self.permission_classes = [IsAuthenticated]
+        else:
+            self.permission_classes = [IsManagerOrReadOnly]
+        return super().get_permissions()
 
     # list all menu items
     def get(self, request, format=None):
@@ -68,20 +86,37 @@ class MenuItemsView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# Menu details view: function base
+# view for category detail
+class CategoryDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self, pk):
+        return
+
+    def get(self, request, pk):
+        category = self.get_object(pk=pk)
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+
+
+#  Menu details view: function base
 # @permission_classes([IsAuthenticated])
 # @api_view(["GET", "PUT", "PATCH"])
 # def menu_detail_view(request, pk):
 #     menuitem = get_object_or_404(MenuItem, pk=pk)
 #     serializer = MenuItemSerializer(menuitem)
 #     return Response(serializer.data, status=status.HTTP_200_OK)
-
-
 class MenuItemDetailView(APIView):
     """Retreive , update or detail Menu Items"""
 
-    permission_classes = [IsAuthenticated]
+    def get_permissions(self):
+        if self.request.method == "GET":
+            self.permission_classes = [IsAuthenticated]
+        else:
+            self.permission_classes = [IsManagerOrReadOnly]
+        return super().get_permissions()
 
+    # getting the object
     def get_object(self, pk):
         return get_object_or_404(MenuItem, pk=pk)
 

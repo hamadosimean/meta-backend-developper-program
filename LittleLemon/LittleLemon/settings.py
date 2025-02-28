@@ -40,7 +40,13 @@ INSTALLED_APPS = [
     # adding thirds party library
     "LittleLemonAPI",
     "rest_framework",
+    "rest_framework.authtoken",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "djoser",
+    # to be remove after before deployment
+    # debug toolbar
+    "debug_toolbar",
 ]
 
 MIDDLEWARE = [
@@ -51,6 +57,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "LittleLemon.urls"
@@ -130,3 +137,56 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Custom User
 
 AUTH_USER_MODEL = "LittleLemonAPI.CustomUser"
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+
+# restframework settings
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.BrowsableAPIRenderer",
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework_csv.renderers.CSVRenderer",
+        "rest_framework_yaml.renderers.YAMLRenderer",
+        "rest_framework_xml.renderers.XMLRenderer",
+    ],
+    "DEFAULT_FILTER_BACKENDS": (
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
+    ),
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    # throlling
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "2/minute",
+        "user": "2/minute",
+        "ten": "10/minute",
+    },
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 2,
+}
+
+
+# djoser setup
+
+
+DJOSER = {
+    "USER_ID_FIELD": "username",  # Specify the field to be used as the user ID
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCES_TOKEN_LIFETIME": timedelta(minutes=5),
+}

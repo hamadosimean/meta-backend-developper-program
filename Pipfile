@@ -8,6 +8,10 @@ django = "*"
 djangorestframework = "*"
 djoser = "*"
 bleach = "*"
+djangorestframework-xml = "*"
+djangorestframework-csv = "*"
+djangorestframework-yaml = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 
