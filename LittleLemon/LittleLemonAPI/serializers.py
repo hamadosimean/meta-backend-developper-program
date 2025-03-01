@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
+from django.contrib.auth.models import Group
 import bleach
 from .models import CustomUser, Category, MenuItem, Order, OrderItem, Cart
 
@@ -116,4 +117,13 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
+        fields = "__all__"
+
+
+# Group serializer
+class GroupSerializer(serializers.ModelSerializer):
+    """Group serializer"""
+
+    class Meta:
+        model = Group
         fields = "__all__"

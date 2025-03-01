@@ -15,7 +15,7 @@ class CustomUser(AbstractUser):
     # birth_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
-        return self.username
+        return str(self.id) + " " + self.username
 
 
 # Category model
