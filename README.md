@@ -19,7 +19,7 @@ This project is part of the **Meta Backend Developer Program**. It provides **Li
 1. **Clone the Repository**  
    ```bash
    [git clone https://github.com/hamadosimean/little-lemon.git](https://github.com/hamadosimean/meta-backend-developper-program.git)
-   cd little-lemon
+   cd littlelemon
    ```  
 2. **Create and Activate a Virtual Environment**  
    ```bash
