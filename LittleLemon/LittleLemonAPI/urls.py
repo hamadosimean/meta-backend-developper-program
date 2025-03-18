@@ -19,5 +19,10 @@ urlpatterns = [
         "groups/delivery-crew/users/<int:userId>",
         views.DeliveryCrewDetailView.as_view(),
     ),  # delivery crew management
-    path("auth-token-obtain/", obtain_auth_token),
+    # Cart management endpoints
+    path("cart/menu-items", views.CartManagementView.as_view()),
+    # Order management endpoints
+    path("orders", views.OrderManagementView().as_view()),
+    path("orders/<int:orderId>", views.OrderManagementDetailView.as_view()),
+    # path("auth-token-obtain/", obtain_auth_token),
 ]

@@ -8,7 +8,7 @@ from .models import CustomUser, Category, MenuItem, Order, OrderItem, Cart
 
 # user model serializer
 class UserSerializer(serializers.ModelSerializer):
-    date_birth = serializers.DateField(source="birth_date")
+    tel = serializers.DateField(source="contact")
 
     class Meta:
         model = CustomUser
@@ -16,11 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "username",
-            "contact",
-            # "bio",
-            # "location",
-            # "photo",
-            # "date_birth",
+            "tel",
         ]
 
     # Here we are going to sanitize users inputs for security reason
@@ -38,9 +34,9 @@ class UserSerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ["id", "slug", "title"]
+        fields = ["id", "slug", "category_title"]
         extra_kwargs = {
-            "title": {
+            "category_title": {
                 "validators": [
                     UniqueValidator(queryset=Category.objects.all()),
                 ],
@@ -61,10 +57,17 @@ class MenuItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = MenuItem
-        fields = ["id", "title", "price", "featured", "category", "category_id"]
+        fields = [
+            "id",
+            "menu_item_title",
+            "price",
+            "featured",
+            "category",
+            "category_id",
+        ]
         extra_kwargs = {
-            "price": {"min_value": 0},  # price cannot be less than 0
-            "title": {
+            "price": {"min_value": 0.0},  # price cannot be less than 0
+            "menu_item_title": {
                 "validators": [
                     UniqueValidator(queryset=MenuItem.objects.all()),
                 ],
@@ -82,15 +85,25 @@ class MenuItemSerializer(serializers.ModelSerializer):
 # Cart serialization
 class CartSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    menuitem = MenuItemSerializer(many=True)
-    total_price = serializers.SerializerMethodField(method_name="calcuate_total_price")
+    menuitem = MenuItemSerializer(read_only=True)
+    user_id = serializers.IntegerField(write_only=True)
+    menuitem_id = serializers.IntegerField(write_only=True)
+    # price = serializers.SerializerMethodField(method_name="calculate_total_price")
 
     class Meta:
         model = Cart
-        fields = ["menuitem", "quantity", "unit_price", "total_price", "user"]
+        fields = [
+            "menuitem",
+            "quantity",
+            "unit_price",
+            "price",
+            "user",
+            "user_id",
+            "menuitem_id",
+        ]
 
-    def calcuate_total_price(slef, cart: Cart):
-        return cart.price * cart.quantity
+    # def calculate_total_price(self, cart: Cart):
+    #     return cart.unit_price * cart.quantity
 
 
 # order serialization
@@ -112,7 +125,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 # OrderItem serializer
 class OrderItemSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    order = OrderSerializer(read_only=True)
     menuitem = MenuItemSerializer(many=True)
 
     class Meta:

@@ -21,7 +21,7 @@ class CustomUser(AbstractUser):
 # Category model
 class Category(models.Model):
     slug = models.SlugField(db_index=True)
-    title = models.CharField(max_length=225)
+    category_title = models.CharField(max_length=225)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -29,19 +29,19 @@ class Category(models.Model):
         return super().save(*args, **kwargs)
 
     def __str__(self) -> str:
-        return self.title
+        return self.category_title
 
 
 # Menu item model
 class MenuItem(models.Model):
-    title = models.CharField(max_length=225, db_index=True)
+    menu_item_title = models.CharField(max_length=225, db_index=True)
     price = models.DecimalField(max_digits=6, decimal_places=2, db_index=True)
     # image = models.ImageField(upload_to="menu_items/", blank=True)
     featured = models.BooleanField(db_index=True)
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
 
     def __str__(self) -> str:
-        return self.title
+        return self.menu_item_title
 
 
 # Cart model , this cart must be empty upon submission for orders
@@ -70,16 +70,20 @@ class Order(models.Model):
     )
     status = models.BooleanField(
         db_index=True, default=0
-    )  # This field allows to get the status of the order , whether it is cancel, delivered or spending
+    )  # This field allows to get the status of the order , whether it is cancel, delivered or pendding
     total = models.DecimalField(max_digits=6, decimal_places=2)
-    date = models.DateField(db_index=True)
+    date = models.DateField(db_index=True, auto_now_add=True)
 
     def __str__(self) -> str:
-        return self.user.username + " " + self.delivery_crew.username
+        return f"Order {str(self.id)}"
+
+    def save(self, force_insert=True, force_update=True, *args, **kwargs):
+        return super().save(force_insert, force_update, *args, **kwargs)
 
 
 # Orders items tables
 class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     menuitem = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     quantity = models.SmallIntegerField()
@@ -87,7 +91,7 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=6, decimal_places=2)
 
     class Meta:
-        unique_together = ("user", "menuitem")
+        unique_together = ("order", "menuitem")
 
     def __str__(self) -> str:
-        return self.user.username
+        return f"Order Item {str(self.id)}"
