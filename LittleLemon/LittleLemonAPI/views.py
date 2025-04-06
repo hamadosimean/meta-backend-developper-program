@@ -76,7 +76,7 @@ class CategoryDetailView(APIView):
 
 
 class MenuItemDetailView(APIView):
-    """Retreive , update or delete Menu Item"""
+    """Retrieve , update or delete Menu Item"""
 
     def get_permissions(self):
         if self.request.method == "GET":

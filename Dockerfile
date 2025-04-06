@@ -1,6 +1,7 @@
 FROM python:3
-COPY . /app
+COPY  . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
-CMD [ "python3","manage.py","runserver","0.0.0.0:8000"]
+
+CMD [ "python","manage.py","runserver","0.0.0.0:8000"]
 
