@@ -1,0 +1,47 @@
+# Docker ignore file for Django/Python project
+
+# Version control
+.git
+.gitignore
+.hg
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+.python-version
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+media
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Dependency directories
+node_modules/
+
+# Local development
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Documentation
+docs/_build/
+
+# Test files
+.coverage
+htmlcov/
